@@ -129,12 +129,16 @@ class EDAApplication {
     // ===== INITIALIZATION METHODS =====
     async initializeComponents() {
         try {
-            // Initialize specialized modules (they will be created later)
-            this.uploader = null;
-            this.analyzer = null;
-            this.visualizer = null;
-            this.featureEngine = null;
-            this.insightsEngine = null;
+            // Initialize specialized modules 
+            this.uploader = null;  // Will be lazy-loaded
+            
+            // Initialize core modules
+            this.analyzer = new DataAnalyzer(this);
+            this.visualizer = new VisualizationEngine(this);
+            this.featureEngine = new FeatureEngineer(this);
+            this.insightsEngine = new InsightsEngine(this);
+            
+            console.log('✅ All modules initialized successfully');
             
             // Initialize UI components
             this.initializeNavigation();
