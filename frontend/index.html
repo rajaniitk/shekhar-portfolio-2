@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Intelligent EDA Pro - Advanced Data Analysis Platform</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- CSS Links -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div id="animated-background"></div>
+    
+     <!-- Loading Screen -->
+     <div id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">
+                <span>Initializing Advanced Analytics...</span>
+                <div class="loading-progress">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-brain"></i>
+                <span>EDA Pro</span>
+                <div class="version-badge">v2.0</div>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link active" data-section="upload">
+                    <i class="fas fa-upload"></i>
+                    <span>Data Upload</span>
+                </a>
+                <a href="#eda" class="nav-link" data-section="eda">
+                    <i class="fas fa-chart-line"></i>
+                    <span>EDA Analysis</span>
+                </a>
+                <a href="#analysis" class="nav-link" data-section="analysis">
+                    <i class="fas fa-microscope"></i>
+                    <span>Deep Analysis</span>
+                </a>
+                <a href="#features" class="nav-link" data-section="features">
+                    <i class="fas fa-cogs"></i>
+                    <span>Feature Engineering</span>
+                </a>
+                <a href="#insights" class="nav-link" data-section="insights">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>AI Insights</span>
+                </a>
+                <a href="#reports" class="nav-link" data-section="reports">
+                    <i class="fas fa-file-download"></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="settings-btn" id="settings-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-database"></i> Data Workspace</h3>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- Data Info Panel -->
+                <div class="data-info-panel" id="data-info-panel" style="display: none;">
+                    <h4><i class="fas fa-info-circle"></i> Dataset Info</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Rows</span>
+                            <span class="info-value" id="data-rows">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Columns</span>
+                            <span class="info-value" id="data-columns">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Size</span>
+                            <span class="info-value" id="data-size">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Missing</span>
+                            <span class="info-value" id="data-missing">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column Explorer -->
+                <div class="column-explorer" id="column-explorer" style="display: none;">
+                    <h4><i class="fas fa-columns"></i> Column Explorer</h4>
+                    <div class="column-search">
+                        <input type="text" id="column-search" placeholder="Search columns..." class="search-input">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="column-list" id="column-list"></div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions" id="quick-actions" style="display: none;">
+                    <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+                    <div class="action-buttons">
+                        <button class="action-btn" data-action="generate-eda">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Generate EDA</span>
+                        </button>
+                        <button class="action-btn" data-action="missing-analysis">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Missing Data</span>
+                        </button>
+                        <button class="action-btn" data-action="correlation-analysis">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Correlations</span>
+                        </button>
+                        <button class="action-btn" data-action="outlier-detection">
+                            <i class="fas fa-search-minus"></i>
+                            <span>Outliers</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Upload Section -->
+            <section class="content-section active" id="upload-section" data-aos="fade-up">
+                <div class="section-header">
+                    <div class="header-content">
+                        <h1><i class="fas fa-cloud-upload-alt"></i> Welcome to Intelligent EDA Pro</h1>
+                        <p class="subtitle">Advanced Exploratory Data Analysis powered by AI</p>
+                    </div>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Analysis Types</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">30+</span>
+                            <span class="stat-label">Statistical Tests</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">AI</span>
+                            <span class="stat-label">Powered Insights</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <form id="upload-form" autocomplete="off" novalidate style="margin:0;padding:0;border:0;background:none;">
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h3>Drag & Drop Your Dataset</h3>
+                            <p>or click to browse files</p>
+                            <div class="supported-formats">
+                                <span class="format-badge">CSV</span>
+                                <span class="format-badge">JSON</span>
+                                <span class="format-badge">XLSX</span>
+                                <span class="format-badge">PARQUET</span>
+                            </div>
+                            <input type="file" id="file-input" accept=".csv,.json,.xlsx,.xls,.parquet" hidden>
+                            <button class="browse-btn" type="button" onclick="document.getElementById('file-input').click()">
+                                <i class="fas fa-folder-open"></i>
+                                Browse Files
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Upload Progress -->
+                <div class="upload-progress" id="upload-progress" style="display: none;">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progress-percentage">0%</span>
+                            <span id="progress-status">Uploading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Preview -->
+                <div class="data-preview" id="data-preview" style="display: none;">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-table"></i> Data Preview</h3>
+                        <div class="preview-actions">
+                            <button class="btn-secondary" id="edit-data-btn">
+                                <i class="fas fa-edit"></i> Edit Data
+                            </button>
+                            <button class="btn-primary" id="proceed-btn">
+                                <i class="fas fa-arrow-right"></i> Start Analysis
+                            </button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <div class="table-container">
+                            <table id="preview-table" class="data-table"></table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EDA Section -->
+            <section class="content-section" id="eda-section" data-aos="fade-up">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-line"></i> Exploratory Data Analysis</h2>
+                    <div class="section-actions">
+                        <button class="btn-secondary" id="refresh-eda-btn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn-primary" id="export-eda-btn">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- EDA Dashboard -->
+                <!-- Visualization Controls (required by JS) -->
+                <div id="viz-controls" class="viz-controls-panel">
+                    <div class="viz-controls-row">
+                        <label for="plot-type-select"><i class="fas fa-chart-bar"></i> Chart Type:</label>
+                        <select id="plot-type-select" class="viz-select">
+                            <option value="histogram">Histogram</option>
+                            <option value="scatter">Scatter</option>
+                            <option value="box">Box Plot</option>
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="pie">Pie Chart</option>
+                        </select>
+                        <label for="viz-columns"><i class="fas fa-columns"></i> Columns:</label>
+                        <select id="viz-columns" class="viz-select" multiple>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                        <button class="btn-primary" id="create-chart-btn"><i class="fas fa-plus"></i> Create Chart</button>
+                        <button class="btn-secondary" id="chart-settings-btn"><i class="fas fa-cog"></i> Chart Settings</button>
+                    </div>
+                </div>
+                <div class="eda-dashboard" id="eda-dashboard">
+                    <!-- Overview Cards -->
+                    <div class="overview-cards">
+                        <div class="overview-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card-icon">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="card-content">
+                                <h4>Dataset Shape</h4>
+                                <div class="card-value" id="shape-value">-</div>
+                                <div class="card-subtitle">rows × columns</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-card" data-aos="fade-up" data-aos-delay="200">
+                            <div class="card-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-content">
+                                <h4>Missing Values</h4>
+                                <div class="card-value" id="missing-value">-</div>
+                                <div class="card-subtitle">total missing</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-card" data-aos="fade-up" data-aos-delay="300">
+                            <div class="card-icon">
+                                <i class="fas fa-clone"></i>
+                            </div>
+                            <div class="card-content">
+                                <h4>Duplicates</h4>
+                                <div class="card-value" id="duplicates-value">-</div>
+                                <div class="card-subtitle">duplicate rows</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-card" data-aos="fade-up" data-aos-delay="400">
+                            <div class="card-icon">
+                                <i class="fas fa-memory"></i>
+                            </div>
+                            <div class="card-content">
+                                <h4>Memory Usage</h4>
+                                <div class="card-value" id="memory-value">-</div>
+                                <div class="card-subtitle">total size</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualization Grid -->
+                    <div class="viz-grid" id="viz-grid">
+                        <!-- Visualizations will be dynamically added here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analysis Section -->
+            <section class="content-section" id="analysis-section" data-aos="fade-up">
+                <div class="section-header">
+                    <h2><i class="fas fa-microscope"></i> Deep Analysis</h2>
+                    <div class="analysis-tabs">
+                        <button class="tab-btn active" data-tab="univariate">Univariate</button>
+                        <button class="tab-btn" data-tab="bivariate">Bivariate</button>
+                        <button class="tab-btn" data-tab="multivariate">Multivariate</button>
+                        <button class="tab-btn" data-tab="statistical">Statistical Tests</button>
+                    </div>
+                </div>
+
+                <div class="analysis-content">
+                    <!-- Column Selector -->
+                    <div class="column-selector" id="column-selector">
+                        <div class="selector-group">
+                            <label>Select Column(s) for Analysis:</label>
+                            <div class="multi-select-wrapper">
+                                <select multiple id="analysis-columns" class="multi-select">
+                                    <!-- Options will be populated dynamically -->
+                                </select>
+                                <div class="select-helper">Hold Ctrl/Cmd to select multiple columns</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-primary" id="run-analysis-btn">
+                            <i class="fas fa-play"></i> Run Analysis
+                        </button>
+                    </div>
+
+                    <!-- Analysis Results -->
+                    <div class="analysis-results" id="analysis-results">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feature Engineering Section -->
+            <section class="content-section" id="features-section" data-aos="fade-up">
+                <div class="section-header">
+                    <h2><i class="fas fa-cogs"></i> Feature Engineering</h2>
+                    <div class="section-actions">
+                        <button class="btn-secondary" id="suggest-features-btn">
+                            <i class="fas fa-magic"></i> AI Suggestions
+                        </button>
+                        <button class="btn-primary" id="apply-features-btn">
+                            <i class="fas fa-check"></i> Apply Changes
+                        </button>
+                    </div>
+                </div>
+
+                <div class="features-content">
+                    <!-- Feature Engineering Options -->
+                    <div class="feature-options" id="feature-options">
+                        <!-- Options will be populated dynamically -->
+                    </div>
+
+                    <!-- Transformation Preview -->
+                    <div class="transformation-preview" id="transformation-preview">
+                        <!-- Preview will be shown here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Insights Section -->
+            <section class="content-section" id="insights-section" data-aos="fade-up">
+                <div class="section-header">
+                    <h2><i class="fas fa-lightbulb"></i> AI-Powered Insights</h2>
+                    <div class="insights-filters">
+                        <select id="insights-filter" class="filter-select">
+                            <option value="all">All Insights</option>
+                            <option value="high">High Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="insights-content">
+                    <!-- Insights Dashboard -->
+                    <div class="insights-dashboard" id="insights-dashboard">
+                        <!-- AI insights will be displayed here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section class="content-section" id="reports-section" data-aos="fade-up">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-download"></i> Export & Reports</h2>
+                    <div class="report-options">
+                        <select id="report-format" class="format-select">
+                            <option value="html">HTML Report</option>
+                            <option value="pdf">PDF Report</option>
+                            <option value="json">JSON Data</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="reports-content">
+                    <!-- Report Generation Options -->
+                    <div class="report-generator" id="report-generator">
+                        <!-- Report options will be displayed here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <button class="modal-close" id="settings-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <h4>Appearance</h4>
+                    <div class="setting-item">
+                        <label for="theme-select">Theme:</label>
+                        <select id="theme-select">
+                            <option value="dark">Dark Mode</option>
+                            <option value="light">Light Mode</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="animations-toggle">Animations:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="animations-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h4>Analysis</h4>
+                    <div class="setting-item">
+                        <label for="auto-insights">Auto Generate Insights:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="auto-insights" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="max-features">Max Features to Display:</label>
+                        <input type="number" id="max-features" value="20" min="5" max="100">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="settings-reset">Reset</button>
+                <button class="btn-primary" id="settings-save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- Developer Credit -->
+    <div class="developer-credit" id="developer-credit">
+        <div class="credit-content">
+            <div class="developer-avatar">
+                <i class="fas fa-code"></i>
+            </div>
+            <div class="developer-info">
+                <h4>Built with ❤️ by</h4>
+                <p class="developer-name">Advanced Analytics Team</p>
+                <p class="developer-title">Data Science & AI Engineers</p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">Flask</span>
+                    <span class="tech-badge">JavaScript</span>
+                    <span class="tech-badge">AI/ML</span>
+                </div>
+            </div>
+            <div class="credit-actions">
+                <a href="#" class="credit-link" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="credit-link" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="credit-link" title="Portfolio">
+                    <i class="fas fa-globe"></i>
+                </a>
+            </div>
+        </div>
+        <button class="credit-toggle" id="credit-toggle">
+            <i class="fas fa-info-circle"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/upload.js"></script>
+    <script src="js/analysis.js"></script>
+    <script src="js/visualizations.js"></script>
+    <script src="js/features.js"></script>
+    <script src="js/insights.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
