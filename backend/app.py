@@ -955,6 +955,87 @@ def export_report(session_id):
         logging.exception('Report generation failed')
         return jsonify({'error': str(e)}), 500
 
+@app.route('/analyze_correlations/<session_id>', methods=['POST', 'OPTIONS'])
+def analyze_correlations(session_id):
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        if session_id not in sessions:
+            return jsonify({'error': 'Session not found'}), 404
+        
+        data = request.json
+        columns = data.get('columns', [])
+        
+        df = sessions[session_id]['dataframe']
+        analyzer = EDAAnalyzer()
+        
+        # Filter to numeric columns if specific columns requested
+        if columns:
+            available_columns = [col for col in columns if col in df.columns]
+            if available_columns:
+                df_subset = df[available_columns]
+            else:
+                return jsonify({'error': 'No valid columns found'}), 400
+        else:
+            df_subset = df
+        
+        # Get correlation analysis
+        correlation_results = analyzer._analyze_correlations(df_subset)
+        
+        # Generate PCA analysis if enough numeric columns
+        numeric_cols = df_subset.select_dtypes(include=[np.number]).columns
+        pca_analysis = {}
+        if len(numeric_cols) >= 2:
+            try:
+                from sklearn.decomposition import PCA
+                from sklearn.preprocessing import StandardScaler
+                
+                # Prepare data for PCA
+                numeric_data = df_subset[numeric_cols].dropna()
+                if len(numeric_data) > 0:
+                    scaler = StandardScaler()
+                    scaled_data = scaler.fit_transform(numeric_data)
+                    
+                    # Perform PCA
+                    pca = PCA()
+                    pca.fit(scaled_data)
+                    
+                    pca_analysis = {
+                        'explained_variance_ratio': pca.explained_variance_ratio_.tolist(),
+                        'cumulative_variance_ratio': np.cumsum(pca.explained_variance_ratio_).tolist(),
+                        'components': pca.components_.tolist(),
+                        'n_components': len(pca.explained_variance_ratio_)
+                    }
+            except Exception as e:
+                pca_analysis = {'error': f'PCA analysis failed: {str(e)}'}
+        
+        # Generate recommendations
+        recommendations = []
+        if 'high_correlations' in correlation_results:
+            for corr_pair in correlation_results['high_correlations']:
+                recommendations.append({
+                    'type': 'correlation',
+                    'message': f"High correlation ({corr_pair['correlation']}) between {corr_pair['column1']} and {corr_pair['column2']}",
+                    'severity': 'medium',
+                    'action': 'Consider removing one of these variables to avoid multicollinearity'
+                })
+        
+        response_data = {
+            'correlation_matrix': correlation_results,
+            'pca_analysis': pca_analysis,
+            'recommendations': recommendations
+        }
+        
+        return Response(
+            json.dumps(clean_nans(response_data), cls=NumpyEncoder, allow_nan=False), 
+            mimetype='application/json'
+        )
+        
+    except Exception as e:
+        logging.exception('Correlation analysis failed')
+        return jsonify({'error': str(e)}), 500
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Endpoint not found'}), 404
